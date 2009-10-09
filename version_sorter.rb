@@ -13,10 +13,8 @@ module VersionSorter
 private
 
   def normalize(version)
-    version.scan(/(\d+)|([^\d\.-]+)/).map {|n, x|
-      n ? [n.to_i, n] : [1.0/0.0, x]}
+    version.to_s.scan(%r/\d+/o).map{|d| d.to_i}
   end
-
 end
 
 puts
@@ -42,12 +40,14 @@ if $0 == __FILE__
     end
   end
 
-  require 'benchmark'
-  versions = IO.read('tags.txt').split("\n")
-  count = 10
-  Benchmark.bm(20) do |x|
-    x.report("sort")             { count.times { VersionSorter.sort(versions) } }
+  if test(?e, 'tags.txt')
+    require 'benchmark'
+    versions = IO.read('tags.txt').split("\n")
+    count = 10
+    Benchmark.bm(20) do |x|
+      x.report("sort")             { count.times { VersionSorter.sort(versions) } }
+    end
+    puts
   end
-  puts
 
 end
